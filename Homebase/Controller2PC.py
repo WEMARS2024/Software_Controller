@@ -97,7 +97,7 @@ class XboxController(object):
 rpi_ip = "127.0.0.1"   # Replace with server's IP address
 rpi_port = 2222        # Replace with server's listening port
 
-# Create a UDP socket
+# Create a UDP socket 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 if __name__ == '__main__':

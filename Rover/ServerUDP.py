@@ -1,7 +1,7 @@
 import socket
 
 # Set up the UDP server
-rpi_ip = ""   # The IP address where the server listens
+rpi_ip = "192.168.137.40"   # The IP address where the server listens
 rpi_port = 2222       # The port on which the server listens
 
 # Create a UDP socket

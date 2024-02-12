@@ -94,7 +94,7 @@ class XboxController(object):
 
 
 # Set up the UDP client
-rpi_ip = "127.0.0.1"   # Replace with server's IP address
+rpi_ip = "192.168.137.40"   # Replace with server's IP address
 rpi_port = 2222        # Replace with server's listening port
 
 # Create a UDP socket 

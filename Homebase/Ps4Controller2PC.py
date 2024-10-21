@@ -1,31 +1,29 @@
 from inputs import get_gamepad
 import math
 import threading
-
 import socket
 
-class XboxController(object):
+class PS4Controller(object):
     MAX_TRIG_VAL = math.pow(2, 8)
     MAX_JOY_VAL = math.pow(2, 15)
 
     def __init__(self):
-
-        self.LeftJoystickY = 0
-        self.LeftJoystickX = 0
-        self.RightJoystickY = 0
-        self.RightJoystickX = 0
-        self.LeftTrigger = 0
-        self.RightTrigger = 0
-        self.LeftBumper = 0
-        self.RightBumper = 0
-        self.A = 0
-        self.X = 0
-        self.Y = 0
-        self.B = 0
+        self.LeftStickY = 0
+        self.LeftStickX = 0
+        self.RightStickY = 0
+        self.RightStickX = 0
+        self.L2Trigger = 0
+        self.R2Trigger = 0
+        self.L1Button = 0
+        self.R1Button = 0
+        self.CrossButton = 0
+        self.CircleButton = 0
+        self.TriangleButton = 0
+        self.SquareButton = 0
         self.LeftThumb = 0
         self.RightThumb = 0
-        self.Back = 0
-        self.Start = 0
+        self.ShareButton = 0
+        self.OptionsButton = 0
         self.LeftDPad = 0
         self.RightDPad = 0
         self.UpDPad = 0
@@ -35,53 +33,51 @@ class XboxController(object):
         self._monitor_thread.daemon = True
         self._monitor_thread.start()
 
-
-    def read(self): # return the buttons/triggers that you care about in this methode
-        LX= self.LeftJoystickX
-        LY = self.LeftJoystickY
-        RX= self.RightJoystickX
-        RY = self.RightJoystickY
-        a = self.A
-        b = self.B # b=1, x=2
-        return [a,b,LX,LY,RX,RY]
-
+    def read(self):
+        LX = self.LeftStickX
+        LY = self.LeftStickY
+        RX = self.RightStickX
+        RY = self.RightStickY
+        cross = self.CrossButton
+        circle = self.CircleButton
+        return [cross, circle, LX, LY, RX, RY]
 
     def _monitor_controller(self):
         while True:
             events = get_gamepad()
             for event in events:
                 if event.code == 'ABS_Y':
-                    self.LeftJoystickY = event.state / XboxController.MAX_JOY_VAL # normalize between -1 and 1
+                    self.LeftStickY = event.state / PS4Controller.MAX_JOY_VAL
                 elif event.code == 'ABS_X':
-                    self.LeftJoystickX = event.state / XboxController.MAX_JOY_VAL # normalize between -1 and 1
+                    self.LeftStickX = event.state / PS4Controller.MAX_JOY_VAL
                 elif event.code == 'ABS_RY':
-                    self.RightJoystickY = event.state / XboxController.MAX_JOY_VAL # normalize between -1 and 1
+                    self.RightStickY = event.state / PS4Controller.MAX_JOY_VAL
                 elif event.code == 'ABS_RX':
-                    self.RightJoystickX = event.state / XboxController.MAX_JOY_VAL # normalize between -1 and 1
+                    self.RightStickX = event.state / PS4Controller.MAX_JOY_VAL
                 elif event.code == 'ABS_Z':
-                    self.LeftTrigger = event.state / XboxController.MAX_TRIG_VAL # normalize between 0 and 1
+                    self.L2Trigger = event.state / PS4Controller.MAX_TRIG_VAL
                 elif event.code == 'ABS_RZ':
-                    self.RightTrigger = event.state / XboxController.MAX_TRIG_VAL # normalize between 0 and 1
+                    self.R2Trigger = event.state / PS4Controller.MAX_TRIG_VAL
                 elif event.code == 'BTN_TL':
-                    self.LeftBumper = event.state
+                    self.L1Button = event.state
                 elif event.code == 'BTN_TR':
-                    self.RightBumper = event.state
+                    self.R1Button = event.state
                 elif event.code == 'BTN_SOUTH':
-                    self.A = event.state
+                    self.CrossButton = event.state
                 elif event.code == 'BTN_NORTH':
-                    self.Y = event.state #previously switched with X
+                    self.TriangleButton = event.state
                 elif event.code == 'BTN_WEST':
-                    self.X = event.state #previously switched with Y
+                    self.SquareButton = event.state
                 elif event.code == 'BTN_EAST':
-                    self.B = event.state
+                    self.CircleButton = event.state
                 elif event.code == 'BTN_THUMBL':
                     self.LeftThumb = event.state
                 elif event.code == 'BTN_THUMBR':
                     self.RightThumb = event.state
                 elif event.code == 'BTN_SELECT':
-                    self.Back = event.state
+                    self.ShareButton = event.state
                 elif event.code == 'BTN_START':
-                    self.Start = event.state
+                    self.OptionsButton = event.state
                 elif event.code == 'BTN_TRIGGER_HAPPY1':
                     self.LeftDPad = event.state
                 elif event.code == 'BTN_TRIGGER_HAPPY2':
@@ -91,17 +87,15 @@ class XboxController(object):
                 elif event.code == 'BTN_TRIGGER_HAPPY4':
                     self.DownDPad = event.state
 
-
-
 # Set up the UDP client
-rpi_ip = "192.168.137.40"   # Replace with server's IP address
-rpi_port = 2222        # Replace with server's listening port
+ps4_ip = "192.168.137.40"   # Replace with server's IP address
+ps4_port = 2222             # Replace with server's listening port
 
 # Create a UDP socket 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 if __name__ == '__main__':
-    joy = XboxController()
+    ps4_controller = PS4Controller()
     while True:
-        print(joy.read())
-        sock.sendto((joy.read()).encode(), (rpi_ip, rpi_port))
+        print(ps4_controller.read())
+        # sock.sendto(str(ps4_controller.read()).encode(), (ps4_ip, ps4_port))
